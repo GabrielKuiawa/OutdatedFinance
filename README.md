@@ -10,8 +10,8 @@
 #### Clone Repository
 
 ```
-$ git clone git@github.com:SI-DABE/problem-track.git
-$ cd problem-track
+$ git clone git@github.com:GabrielKuiawa/OutdatedFinance.git
+$ cd OutdatedFinance
 ```
 
 #### Define the env variables
