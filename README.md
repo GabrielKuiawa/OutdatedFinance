@@ -12,7 +12,7 @@
 #### Clone Repository
 
 ```
-$ git clone git@github.com:SI-DABE/problem-track.git
+$ git clone git@github.com:GabrielKuiawa/OutdatedFinance.git
 $ cd problem-track
 ```
 
