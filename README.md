@@ -13,7 +13,7 @@
 
 ```
 $ git clone git@github.com:GabrielKuiawa/OutdatedFinance.git
-$ cd problem-track
+$ cd OutdatedFinance
 ```
 
 #### Define the env variables
