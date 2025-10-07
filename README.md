@@ -1,6 +1,4 @@
-## Problem Track
-
-"Problem Track" is the ultimate solution for organizations seeking to enhance their problem resolution processes, drive operational efficiency, and deliver exceptional customer experiences.
+## OutdatedFinance
 
 ### Dependências
 
@@ -12,8 +10,8 @@
 #### Clone Repository
 
 ```
-$ git clone git@github.com:SI-DABE/problem-track.git
-$ cd problem-track
+$ git clone git@github.com:GabrielKuiawa/OutdatedFinance.git
+$ cd OutdatedFinance
 ```
 
 #### Define the env variables
