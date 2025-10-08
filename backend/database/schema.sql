@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS expenses_tags;
 DROP TABLE IF EXISTS expenses;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS group_users;
-DROP TABLE IF EXISTS groups;
+DROP TABLE IF EXISTS `groups`;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
@@ -19,7 +19,7 @@ CREATE TABLE users (
     deleted_at DATETIME
 );
 
-CREATE TABLE groups (
+CREATE TABLE `groups` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -32,7 +32,7 @@ CREATE TABLE group_users (
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     deleted_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
+    FOREIGN KEY (group_id) REFERENCES `groups`(id) ON DELETE CASCADE
 );
 
 CREATE TABLE tags (
@@ -64,7 +64,7 @@ CREATE TABLE expenses_tags (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tag_id INT NOT NULL,
     expenses_id INT NOT NULL,
-    FOREIGNencrypted_password KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
     FOREIGN KEY (expenses_id) REFERENCES expenses(id) ON DELETE CASCADE
 );
 
