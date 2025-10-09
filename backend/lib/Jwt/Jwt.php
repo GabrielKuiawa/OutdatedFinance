@@ -8,7 +8,7 @@ class Jwt
     {
         $this->secretKey = $secretKey;
     }
-}
+
 
 public function generateToken(array $payload, $expirationInSeconds = 3600): string
 {
@@ -76,4 +76,5 @@ private function encode($data): string
 private function decode(string $data): array
 {
     return json_decode(base64_decode(strtr($data, '-_', '+/')), true);
+}
 }
