@@ -7,7 +7,7 @@ use Core\Http\Request;
 use Lib\Authentication\Auth;
 
 
-class Authenticate implements Middleware
+class AdminAuthenticate implements Middleware
 {
     public function handle(Request $request): void
     {
@@ -17,6 +17,10 @@ class Authenticate implements Middleware
 
         if (!$token || !$decoded) {
             $this->sendUnauthorizedResponse('Não autorizado');
+        }
+
+        if ($decoded->user['role'] == 'user') {
+            $this->sendUnauthorizedResponse('Acesso restrito a administradores');
         }
     }
 

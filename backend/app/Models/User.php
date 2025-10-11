@@ -23,7 +23,7 @@ class User extends Model
     protected ?string $password = null;
     protected ?string $password_confirmation = null;
 
-    public function validates(): void
+     public function validates(): void
     {
         Validations::notEmpty('name', $this);
         Validations::notEmpty('email', $this);

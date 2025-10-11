@@ -33,23 +33,25 @@ class UsersPopulate
         echo "Users populated successfully.\n";
     }
 
-    public static function createUser(
-        string $name,
-        string $email,
-        string $password,
-        string $role,
-        string $avatar
-    ): void {
-        $user = new User([
-            'name' => $name,
-            'email' => $email,
-            'encrypted_password' => $password,
-            'avatar' => $avatar,
-            'role' => $role,
-            'created_at' => date('Y-m-d H:i:s'),
-            'deleted_at' => null
-        ]);
-
-        $user->save();
+    public static function createUser(string $name, string $email, string $password, string $role, string $avatar): void
+    {
+        try {
+            $user = new User([
+                'name' => $name,
+                'email' => $email,
+                'password' => $password,
+                'password_confirmation' => $password,
+                'avatar' => $avatar,
+                'role' => $role,
+                'created_at' => date('Y-m-d H:i:s'),
+                'deleted_at' => null
+            ]);
+            
+            $user->validates();
+            $user->authenticate($password);
+            $user->save();
+        } catch (\Exception $e) {
+            echo "Error creating user $email: " . $e->getMessage() . PHP_EOL;
+        }
     }
 }
