@@ -9,29 +9,50 @@ use Lib\Authentication\Auth;
 
 class UsersController extends Controller
 {
-    public function getUserByEmail(Request $request): void
+    public function getUsers(): void
     {
-        dd("ok");
-        // $userEmail = $request->getParam('email');
-        // // if (!$userEmail) {
-        // //     http_response_code(400);
-        // //     echo json_encode(['error' => 'Email é obrigatório']);
-        // //     return;
-        // // }
-        // $user = User::findByEmail($userEmail);
-        // dd($user->email);
+        $users = User::all(['role' => 'admin']);
+        $result = [];
+        foreach ($users as $user) {
+            if ($user->role != 'admin') {
+                $result[] = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'password' => $user->encrypted_password,
+                    'avatar' => $user->avatar,
+                    'created_at' => $user->created_at,
+                    'deleted_at' => $user->deleted_at,
+                ];
+            }
+        }
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode($result);
     }
-    public function getUserByEmailAdmin(Request $request): void
+
+    public function getAdmins(): void
     {
-        dd("ok admin");
-        // $userEmail = $request->getParam('email');
-        // // if (!$userEmail) {
-        // //     http_response_code(400);
-        // //     echo json_encode(['error' => 'Email é obrigatório']);
-        // //     return;
-        // // }
-        // $user = User::findByEmail($userEmail);
-        // dd($user->email);
+        $users = User::all(['role' => 'admin']);
+        $result = [];
+        foreach ($users as $user) {
+            if ($user->role != 'user') {
+                $result[] = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'password' => $user->encrypted_password,
+                    'avatar' => $user->avatar,
+                    'created_at' => $user->created_at,
+                    'deleted_at' => $user->deleted_at,
+                ];
+            }
+        }
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode($result);
     }
 
     public function getAllUsers(): void
