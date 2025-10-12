@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { loginAdmin, loginUser } from '@/services/authService';
-
-const BASE_URL = 'http://localhost:80';
+import { login } from '@/services/authService';
 
 
 export default function LoginScreen() {
@@ -23,23 +21,24 @@ export default function LoginScreen() {
   const loginRequest = async () => {
     setIsLoading(true);
     try {
-      let result = await loginUser(email, password);
+      let result = await login(email, password);
 
       if(result.success) {
-        Alert.alert('Sucesso', 'Login de usuárion efetuado!');
-        router.push("/home");
+        const role = result.data.role;
+
+        if(role === 'admin'){
+          Alert.alert('Sucesso', 'Login de Administrador efetuado com sucesso!');
+          router.push('/homeAdmin');
+        } else if(role === 'user') {
+          Alert.alert('Sucesso', 'Login de Usuário efetuado com sucesso!');
+          router.push('/home');
+        }else {
+          Alert.alert('Erro', 'Usuário inválido.');
+        }
         return;
       }
 
-      result = await loginAdmin(email, password);
-      
-      if(result.success) {
-        Alert.alert('Sucesso', 'Login de Administrador efetuado com sucesso!');
-        router.push("/admin"); 
-        return;
-      }
-
-       Alert.alert('Erro de Login', result.data.message || 'E-mail ou senha inválida.');
+    Alert.alert('Erro de Login', result.data.message || 'E-mail ou senha inválida.');
     }catch (error) {
       console.error(error);
       Alert.alert('Erro de Conexão', 'Não foi possível completar a requisição.');

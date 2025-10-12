@@ -1,14 +1,10 @@
 
 
-const BASE_URL: string = 'http://localhost:8000'; 
+const BASE_URL: string = 'http://192.168.0.100'; 
 
 export interface LoginData {
   token?: string; 
-  user?: {
-    id: number;
-    email: string;
-    
-  };
+  role?: 'admin' | 'user'; 
   message?: string; 
 }
 
@@ -36,7 +32,11 @@ const performLogin = async (endpoint: string, email: string, password: string): 
     return {
       success: response.ok,
       status: response.status,
-      data: data,
+     data: {
+        token: data.token,
+        role: data.role,
+        message: data.message
+      },
     };
   } catch (error) {
    
@@ -52,11 +52,8 @@ const performLogin = async (endpoint: string, email: string, password: string): 
 };
 
 
-export const loginUser = (email: string, password: string): Promise<LoginResponse> => {
-  return performLogin('/api/users', email, password);
+export const login = (email: string, password: string): Promise<LoginResponse> => {
+  return performLogin('/api/login', email, password);
 };
 
 
-export const loginAdmin = (email: string, password: string): Promise<LoginResponse> => {
-  return performLogin('/api/admin', email, password);
-};
