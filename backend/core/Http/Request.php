@@ -17,8 +17,19 @@ class Request
     {
         $this->method = $_REQUEST['_method'] ?? $_SERVER['REQUEST_METHOD'];
         $this->uri = $_SERVER['REQUEST_URI'];
-        $this->params = $_REQUEST;
         $this->headers = function_exists('getallheaders') ? getallheaders() : [];
+
+        // Suporte a JSON no corpo da requisição
+        if (
+            isset($this->headers['Content-Type']) &&
+            str_contains($this->headers['Content-Type'], 'application/json')
+        ) {
+            $input = file_get_contents('php://input');
+            $json = json_decode($input, true);
+            $this->params = is_array($json) ? $json : [];
+        } else {
+            $this->params = $_REQUEST;
+        }
     }
 
     public function getMethod(): string

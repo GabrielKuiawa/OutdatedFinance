@@ -1,7 +1,16 @@
 <?php
 
-use App\Controllers\HomeController;
+use App\Controllers\UsersController;
 use Core\Router\Route;
 
-// Authentication
-Route::get('/', [HomeController::class, 'getAllUsers'])->name('root');
+Route::post('/api/login', [UsersController::class, 'login'])->name('api.login');
+Route::get('/', [UsersController::class, 'getAllUsers'])->name('root');
+Route::get('/{email}', [UsersController::class, 'getUserByEmail'])->name('root');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/api/users', [UsersController::class, 'getUsers'])->name('api.users');
+
+    Route::middleware('admin')->group(function () {
+        Route::get('/api/admin', [UsersController::class, 'getAdmins'])->name('api.admin');
+    });
+});
