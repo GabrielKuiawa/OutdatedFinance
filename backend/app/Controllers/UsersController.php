@@ -99,7 +99,7 @@ class UsersController extends Controller
             ]);
 
             header('Content-Type: application/json');
-            echo json_encode(['token' => $token]);
+            echo json_encode(['token' => $token, 'role' => $user->role]);
             return;
         }
 
