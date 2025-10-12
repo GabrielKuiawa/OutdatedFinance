@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const BASE_URL = 'http://10.0.2.2:8000';
+const BASE_URL = 'http://192.168.0.100:80';
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -28,8 +29,8 @@ export default function LoginScreen() {
       const data = await response.json();
 
       response.ok
-   //     ? router.push('/home') 
-     //   : Alert.alert('Erro de Login', data.message || 'E-mail ou senha inválidos.');
+     ? router.push("home") 
+      : Alert.alert('Erro de Login', data.message || 'E-mail ou senha inválidos.');
     } catch (error) {
       console.error(error);
       Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
