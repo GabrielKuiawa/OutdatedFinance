@@ -38,7 +38,7 @@ export default function LoginScreen() {
         return;
       }
 
-    Alert.alert('Erro de Login', result.data.message || 'E-mail ou senha inválida.');
+    Alert.alert('Erro de Login', 'E-mail ou senha inválida.');
     }catch (error) {
       console.error(error);
       Alert.alert('Erro de Conexão', 'Não foi possível completar a requisição.');

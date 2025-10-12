@@ -91,7 +91,7 @@ class UsersController extends Controller
         }
 
         $user = User::findByEmail($email);
-        if ($user->email && $user->authenticate($password)) {
+        if ($user && $user->email && $user->authenticate($password)) {
             $token = Auth::createToken([
                 'id' => $user->id,
                 'email' => $user->email,
