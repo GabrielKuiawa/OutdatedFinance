@@ -4,6 +4,6 @@ export default function Home() {
 
 
     return(
-        <View> <Text> Bem vindo a página inicial do usuário! </Text></View>
+        <View> <Text> Bem vindo a página inicial do Administrador! </Text></View>
     )
 }

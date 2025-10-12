@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { loginAdmin, loginUser } from '@/services/authService';
 
-const BASE_URL = 'http://192.168.0.100:80';
+const BASE_URL = 'http://localhost:80';
 
 
 export default function LoginScreen() {
@@ -12,31 +13,40 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    !email || !password
-      ? Alert.alert('Erro', 'Preencha todos os campos.')
-      : loginRequest();
+    if (!email || !password) {
+      Alert.alert('Erro', 'Preencha todos os campos.');
+      return;
+    }
+    await loginRequest()
   };
 
   const loginRequest = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      let result = await loginUser(email, password);
 
-      const data = await response.json();
+      if(result.success) {
+        Alert.alert('Sucesso', 'Login de usuárion efetuado!');
+        router.push("/home");
+        return;
+      }
 
-      response.ok
-     ? router.push("home") 
-      : Alert.alert('Erro de Login', data.message || 'E-mail ou senha inválidos.');
-    } catch (error) {
+      result = await loginAdmin(email, password);
+      
+      if(result.success) {
+        Alert.alert('Sucesso', 'Login de Administrador efetuado com sucesso!');
+        router.push("/admin"); 
+        return;
+      }
+
+       Alert.alert('Erro de Login', result.data.message || 'E-mail ou senha inválida.');
+    }catch (error) {
       console.error(error);
-      Alert.alert('Erro de Conexão', 'Não foi possível conectar ao servidor.');
+      Alert.alert('Erro de Conexão', 'Não foi possível completar a requisição.');
     } finally {
       setIsLoading(false);
     }
+      
   };
 
   return (
