@@ -9,8 +9,8 @@ Route::get('/{email}', [UsersController::class, 'getUserByEmail'])->name('root')
 
 Route::middleware('auth')->group(function () {
     Route::get('/api/users', [UsersController::class, 'getUsers'])->name('api.users');
+});
 
-    Route::middleware('admin')->group(function () {
-        Route::get('/api/admin', [UsersController::class, 'getAdmins'])->name('api.admin');
-    });
+Route::middleware('admin')->group(function () {
+    Route::get('/api/admin', [UsersController::class, 'getAdmins'])->name('api.admin');
 });

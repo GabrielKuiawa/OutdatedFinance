@@ -1,45 +1,18 @@
 <?php
-
 namespace App\Middleware;
 
+use App\Middleware\Concerns\Response as ConcernsResponse;
 use Core\Http\Middleware\Middleware;
 use Core\Http\Request;
 use Lib\Authentication\Auth;
 
-
-class Authenticate implements Middleware
+class Authenticate implements Middleware 
 {
+    use ConcernsResponse;
     public function handle(Request $request): void
     {
-        $token = $this->getBearerToken();
-
-        $decoded = Auth::check($token);
-
-        if (!$token || !$decoded) {
+        if (!Auth::isAuthenticate()) {
             $this->sendUnauthorizedResponse('Não autorizado');
         }
-    }
-
-    private function getBearerToken(): ?string
-    {
-        $headers = getallheaders();
-
-        if (!isset($headers['Authorization'])) {
-            return null;
-        }
-
-        if (preg_match('/Bearer\s(\S+)/', $headers['Authorization'], $matches)) {
-            return $matches[1];
-        }
-
-        return null;
-    }
-
-    private function sendUnauthorizedResponse(string $message): void
-    {
-        header('HTTP/1.0 401 Unauthorized');
-        header('Content-Type: application/json');
-        echo json_encode(['error' => $message]);
-        exit;
     }
 }

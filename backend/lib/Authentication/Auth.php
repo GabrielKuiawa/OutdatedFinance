@@ -3,54 +3,62 @@
 namespace Lib\Authentication;
 
 use App\Models\User;
-use Lib\Jwt\JWT;
+use Lib\Authentication\JWT;
 
 class Auth
 {
-    private static string $SECRET_KEY;
-
-    private static function getSecretKey(): string
-    {
-        if (!isset(self::$SECRET_KEY)) {
-            self::$SECRET_KEY = $_ENV['JWT_SECRET'] ?? 'default_secret_key';
-        }
-        return self::$SECRET_KEY;
-    }
-
     public static function createToken(array $userData): string
     {
-        $jwt = new JWT(self::getSecretKey());
-        $payload = [
+        return JWT::encode([
             'user' => $userData
-        ];
-
-        return $jwt->generateToken($payload);
+        ]);
     }
 
-    public static function check(string $token): ?object
+
+    public static function isAuthenticate(): bool
     {
-        try {
-            $decoded = JWT::decodeToken($token);
-            if (self::isExpired($decoded)) {
-                return null;
-            }
-            return $decoded;
-        } catch (\Exception $e) {
+        $token = self::getBearerToken();
+        if (!$token) {
+            return false;
+        }
+
+        return JWT::isValid($token);
+    }
+
+    public static function isAuthenticateAsAdmin(): bool
+    {
+        if (!self::isAuthenticate()) {
+            return false;
+        }
+        $decoded = JWT::decode(self::getBearerToken());
+        return  isset($decoded->user['role']) && $decoded->user['role'] === 'admin';
+    }
+
+
+    private static function getBearerToken(): ?string
+    {
+        $headers = getallheaders();
+
+        if (!isset($headers['Authorization'])) {
             return null;
         }
-    }
 
-    private static function isExpired(object $token): bool
-    {
-        return ($token->exp < time());
-    }
+        if (preg_match('/Bearer\s(\S+)/', $headers['Authorization'], $matches)) {
+            return $matches[1];
+        }
 
+        return null;
+    }
 
     public static function user(): ?User
     {
-        if (isset($_SESSION['user']['id'])) {
-            $id = $_SESSION['user']['id'];
-            return User::findById($id);
+        if (!self::isAuthenticate()) {
+            return null;
+        }
+        
+        $decoded = JWT::decode(self::getBearerToken());
+        if (isset($decoded->user['id'])) {
+            return User::findById($decoded->user['id']);
         }
 
         return null;

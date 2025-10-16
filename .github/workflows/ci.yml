@@ -2,16 +2,18 @@ name: Continous Integration
 
 on:
   push:
-  # pull_request:
-  #   types: [opened, synchronize, reopened]
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+  pull_request:
+    paths:
+      - 'backend/**'
 
 jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,22 +21,34 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Create .env
-        run: cp .env.example .env
+        run: |
+          cd backend
+          cp .env.example .env
 
       - name: Composer install
-        run: ./run composer install
+        run: |
+          cd backend
+          ./run composer install
 
       - name: Generate Codeception files
-        run: ./run codecept build
+        run: |
+          cd backend
+          ./run codecept build
 
       - name: Setup Uploads assets permissions
-        run: sudo chown -R www-data:www-data public/assets/uploads
+        run: |
+          cd backend
+          sudo chown -R www-data:www-data public/assets/uploads
 
       - name: Up containers
-        run: ./run up -d
+        run: |
+          cd backend
+          ./run up -d
 
       - name: PHPUnit Units test  
-        run: ./run test tests/Unit
+        run: |
+          cd backend
+          ./run test tests/Unit
 
   acceptance_tests:
     name: Acceptance Tests
@@ -46,22 +60,34 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Create .env
-        run: cp .env.example .env
+        run: |
+          cd backend
+          cp .env.example .env
 
       - name: Composer install
-        run: ./run composer install
+        run: |
+          cd backend
+          ./run composer install
 
       - name: Generate Codeception files
-        run: ./run codecept build
+        run: |
+          cd backend
+          ./run codecept build
 
       - name: Up containers
-        run: ./run up -d
+        run: |
+          cd backend
+          ./run up -d
 
       - name: See containers
-        run: ./run ps
+        run: |
+          cd backend
+          ./run ps
 
       - name: PHPUnit Acceptance test
-        run: ./run test:browser
+        run: |
+          cd backend
+          ./run test:browser
 
   code_quality:
     name: Code Quality Check
@@ -73,19 +99,31 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Create .env
-        run: cp .env.example .env
+        run: |
+          cd backend
+          cp .env.example .env
 
       - name: Composer install
-        run: ./run composer install
+        run: |
+          cd backend
+          ./run composer install
 
       - name: PSR-4 Checker
-        run: ./run composer dump-autoload --optimize --strict-psr
+        run: |
+          cd backend
+          ./run composer dump-autoload --optimize --strict-psr
 
       - name: Generate Codeception files
-        run: ./run codecept build
+        run: |
+          cd backend
+          ./run codecept build
 
       - name: PHPCS
-        run: ./run phpcs
+        run: |
+          cd backend
+          ./run phpcs
 
       - name: PHPStan
-        run: ./run phpstan
+        run: |
+          cd backend
+          ./run phpstan

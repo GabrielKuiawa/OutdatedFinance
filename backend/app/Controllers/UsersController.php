@@ -11,72 +11,23 @@ class UsersController extends Controller
 {
     public function getUsers(): void
     {
-        $users = User::all(['role' => 'admin']);
-        $result = [];
-        foreach ($users as $user) {
-            if ($user->role != 'admin') {
-                $result[] = [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'password' => $user->encrypted_password,
-                    'avatar' => $user->avatar,
-                    'created_at' => $user->created_at,
-                    'deleted_at' => $user->deleted_at,
-                ];
-            }
-        }
-        http_response_code(200);
-        header('Content-Type: application/json');
-        echo json_encode($result);
+        $users = User::where(['role' => 'user']);
+
+        $this->renderJson("users/index", compact('users'));
     }
 
     public function getAdmins(): void
     {
-        $users = User::all(['role' => 'admin']);
-        $result = [];
-        foreach ($users as $user) {
-            if ($user->role != 'user') {
-                $result[] = [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'password' => $user->encrypted_password,
-                    'avatar' => $user->avatar,
-                    'created_at' => $user->created_at,
-                    'deleted_at' => $user->deleted_at,
-                ];
-            }
-        }
-        http_response_code(200);
-        header('Content-Type: application/json');
-        echo json_encode($result);
+        $users = User::where(['role' => 'admin']);
+
+        $this->renderJson("users/index", compact('users'));
     }
 
     public function getAllUsers(): void
     {
         $users = User::all();
 
-        $result = [];
-
-        foreach ($users as $user) {
-            $result[] = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'password' => $user->encrypted_password,
-                'avatar' => $user->avatar,
-                'created_at' => $user->created_at,
-                'deleted_at' => $user->deleted_at,
-            ];
-        }
-
-        http_response_code(200);
-        header('Content-Type: application/json');
-        echo json_encode($result);
+        $this->renderJson("users/index", compact('users'));
     }
 
     public function login(Request $request): void
@@ -85,9 +36,8 @@ class UsersController extends Controller
         $password = $request->getParam('password');
 
         if (!$email || !$password) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Email e senha são obrigatórios' . $password . $email]);
-            return;
+
+            $this->renderJson(['error' => 'Email e senha são obrigatórios']);
         }
 
         $user = User::findByEmail($email);
@@ -98,12 +48,10 @@ class UsersController extends Controller
                 'role' => $user->role
             ]);
 
-            header('Content-Type: application/json');
-            echo json_encode(['token' => $token, 'role' => $user->role]);
-            return;
+            $this->renderJson(['token' => $token, 'role' => $user->role]);
         }
 
-        http_response_code(401);
-        echo json_encode(['error' => 'Credenciais inválidas']);
+
+        $this->renderJson(['error' => 'Credenciais inválidas']);
     }
 }

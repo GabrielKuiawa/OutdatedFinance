@@ -6,6 +6,8 @@ use App\Models\User;
 use Core\Constants\Constants;
 use Lib\Authentication\Auth;
 
+use function PHPUnit\Framework\isString;
+
 class Controller
 {
     protected string $layout = 'application';
@@ -41,17 +43,22 @@ class Controller
     /**
      * @param array<string, mixed> $data
      */
-    protected function renderJson(string $view, array $data = []): void
+    protected function renderJson(string|array $view, array $data = []): void
     {
-        extract($data);
+        if (is_array($view)) {
+            $json = $view;
+        } else {
+            extract($data);
 
-        $view = Constants::rootPath()->join('app/views/' . $view . '.json.php');
-        $json = [];
+            $view = Constants::rootPath()->join('app/views/' . $view . '.json.php');
+            $json = [];
+
+            require $view;
+        }
 
         header('Content-Type: application/json; chartset=utf-8');
-        require $view;
         echo json_encode($json);
-        return;
+        exit;
     }
 
     protected function redirectTo(string $location): void
