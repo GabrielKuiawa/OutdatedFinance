@@ -4,6 +4,7 @@ namespace Tests\Unit\Lib\Authentication;
 
 use Lib\Authentication\Auth;
 use App\Models\User;
+use Lib\Authentication\JWT;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -13,50 +14,31 @@ class AuthTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $_SESSION = [];
         $this->user = new User([
-            'name' => 'User 1',
-            'email' => 'fulano@example.com',
-            'password' => '123456',
-            'password_confirmation' => '123456'
+            'name' => 'Test User',
+            'email' => 'teste@email',
+            'password' => '12345',
+            'password_confirmation' => '12345',
+            'avatar' => 'https://example.com/profile.jpg',
+            'role' =>  'admin',
+            'created_at' => date('Y-m-d H:i:s'),
+            'deleted_at' => null
         ]);
         $this->user->save();
     }
 
-    public function tearDown(): void
+    public function test_create_token_and_check(): void
     {
-        parent::setUp();
-        $_SESSION = [];
-    }
+        $token = Auth::createToken([
+            'id' => $this->user->id,
+            'email' => $this->user->email,
+            'role' => $this->user->role
+        ]);
 
-    public function test_login(): void
-    {
-        Auth::login($this->user);
+        $decoded = JWT::decode($token);
 
-        $this->assertEquals(1, $_SESSION['user']['id']);
-    }
-
-    public function test_user(): void
-    {
-        Auth::login($this->user);
-
-        $userFromSession = Auth::user();
-
-        $this->assertEquals($this->user->id, $userFromSession->id);
-    }
-
-    public function test_check(): void
-    {
-        Auth::login($this->user);
-
-        $this->assertTrue(Auth::check());
-    }
-
-    public function test_logout(): void
-    {
-        Auth::login($this->user);
-        Auth::logout();
-
-        $this->assertFalse(Auth::check());
+        $this->assertNotNull($decoded);
+        $this->assertEquals($this->user->email, $decoded->user['email']);
+        $this->assertTrue($decoded->user['role'] === 'admin');
     }
 }

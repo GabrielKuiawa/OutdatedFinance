@@ -41,6 +41,7 @@ class Controller
 
 
     /**
+     * @param array<string, string>|string $view
      * @param array<string, mixed> $data
      */
     protected function renderJson(string|array $view, array $data = []): void
@@ -56,7 +57,7 @@ class Controller
             require $view;
         }
 
-        header('Content-Type: application/json; chartset=utf-8');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($json);
         exit;
     }
