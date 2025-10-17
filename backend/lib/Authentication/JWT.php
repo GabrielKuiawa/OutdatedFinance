@@ -73,7 +73,7 @@ class JWT
         return json_decode(base64_decode(strtr($data, '-_', '+/')), true);
     }
 
-     private static function secretKey(): string
+    private static function secretKey(): string
     {
         return $_ENV['JWT_SECRET'] ?? 'default_secret_key';
     }

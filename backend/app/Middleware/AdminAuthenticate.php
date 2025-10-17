@@ -17,5 +17,4 @@ class AdminAuthenticate implements Middleware
             $this->sendUnauthorizedResponse('Não autorizado');
         }
     }
-    
 }

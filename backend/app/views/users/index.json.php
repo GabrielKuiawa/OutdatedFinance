@@ -1,6 +1,7 @@
 <?php
+
 $usersToJson = [];
-foreach ($users as $user) { 
+foreach ($users as $user) {
     $usersToJson[] = [
         'id' => $user->id,
         'name' => $user->name,

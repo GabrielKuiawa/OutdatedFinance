@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Middleware\Concerns;
-trait Response {
+
+trait Response
+{
     private function sendUnauthorizedResponse(string $message): void
     {
         header('HTTP/1.0 401 Unauthorized');

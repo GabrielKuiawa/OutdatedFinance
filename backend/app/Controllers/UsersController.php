@@ -36,7 +36,6 @@ class UsersController extends Controller
         $password = $request->getParam('password');
 
         if (!$email || !$password) {
-
             $this->renderJson(['error' => 'Email e senha são obrigatórios']);
         }
 

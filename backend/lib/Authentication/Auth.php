@@ -55,7 +55,7 @@ class Auth
         if (!self::isAuthenticate()) {
             return null;
         }
-        
+
         $decoded = JWT::decode(self::getBearerToken());
         if (isset($decoded->user['id'])) {
             return User::findById($decoded->user['id']);
