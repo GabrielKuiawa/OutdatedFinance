@@ -61,7 +61,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="bg-black" style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Acesso ao Sistema</Text>
 
       <TextInput
