@@ -366,4 +366,9 @@ abstract class Model
     {
         return new BelongsToMany($this, $related, $pivot_table, $from_foreign_key, $to_foreign_key);
     }
+
+    public function toArray(): array
+    {
+        return $this->attributes ?? [];
+    }
 }

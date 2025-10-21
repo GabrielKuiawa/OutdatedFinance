@@ -28,7 +28,7 @@ class ExpensePopulate
                 'Description for expense ' . ($i + 1),
                 rand(50, 500),
                 date('Y-m-d', strtotime("+$i days")),
-                2,
+                $i + 1,
                 null,
                 null,
                 'pendente',

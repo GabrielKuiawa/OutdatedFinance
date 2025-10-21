@@ -8,121 +8,65 @@ use Core\Http\Controllers\Controller;
 
 class ExpensesController extends Controller
 {
-    public function index()
+    public function index(): void
     {
-        $expenses = Expense::All();
+        $expenses = $this->currentUser()->expenses()->get();
         $this->renderJson("expenses/index", compact('expenses'));
     }
 
-    public function show(Request $request)
+    public function show(Request $request): void
     {
-        $id = $request->getParam('id');
-
-        if (!$id) {
-            return $this->renderJson(['error' => 'ID inválido'], ['status' => 400]);
-        }
-
-        $expense = Expense::findById($id);
+        $expense = $this->currentUser()->expenses()->findById($request->getParam('id'));
 
         if ($expense) {
-            return $this->renderJson(['expense' => [
-                'id' => $expense->id,
-                'title' => $expense->title,
-                'description' => $expense->description,
-                'amount' => $expense->amount,
-                'expense_date' => $expense->expense_date,
-                'register_by_user_id' => $expense->register_by_user_id,
-                'group_id' => $expense->group_id,
-                'register_payment_user_id' => $expense->register_payment_user_id,
-                'status' => $expense->status,
-                'payment' => $expense->payment,
-                'created_at' => $expense->created_at,
-            ]]);
+            $this->renderJson(['expense' => $expense->toArray()]);
         }
-
-        return $this->renderJson(['error' => 'Despesa não encontrada'], ['status' => 404]);
     }
 
-    public function store(Request $request)
+    public function create(Request $request): void 
     {
-        $data = $request->getParams();
-
-        if (empty($data)) {
-            return $this->renderJson(['error' => 'Dados não recebidos'], ['status' => 400]);
+        $params = $request->getParams();
+        $expense = $this->currentUser()->expenses()->new($params);
+        if ($expense->save()) {
+            $this->renderJson([
+                'message' => 'Despesa criada com sucesso!',
+                'expense' => $expense->toArray()
+            ]);
+        } else {
+            $this->renderJson(['error' => 'Erro ao criar despesa']);
         }
-
-        $expense = new Expense([
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'amount' => $data['amount'],
-            'expense_date' => $data['expense_date'],
-            'register_by_user_id' => $data['register_by_user_id'],
-            'group_id' => $data['group_id'],
-            'created_at' => date('Y-m-d H:i:s'),
-            'register_payment_user_id' => $data['register_payment_user_id'],
-            'status' => $data['status'],
-            'payment' => $data['payment']
-        ]);
-
-        $expense->save();
-
-        return $this->renderJson([
-            'message' => 'Despesa criada com sucesso!',
-            'expense' => $expense
-        ], ['status' => 201]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): void
     {
         $id = $request->getParam('id');
-        $data = $request->getParams();
+        $params = $request->getParams();
+        $expense = $this->currentUser()->expenses()->findById($id);
 
-        if (!$id) {
-            return $this->renderJson(['error' => 'ID inválido'], ['status' => 400]);
+        $expense->title = $params['title'];
+        $expense->description = $params['description'];
+        $expense->amount = $params['amount'];
+        $expense->expense_date = $params['expense_date'];
+        $expense->group_id = $params['group_id'];
+        $expense->register_payment_user_id = $params['register_payment_user_id'];
+        $expense->status = $params['status'];
+        $expense->payment = $params['payment'];
+
+        if ($expense->save()) {
+            $this->renderJson([
+                'message' => 'Despesa atualizada com sucesso!',
+                'expense' => $expense->toArray()
+            ]);
+        } else {
+            $this->renderJson(['error' => 'Erro ao atualizar despesa']);
         }
-
-        $expense = Expense::findById($id);
-        if (!$expense) {
-            return $this->renderJson(['error' => 'Despesa não encontrada'], ['status' => 404]);
-        }
-
-        $expense->update([
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'amount' => $data['amount'],
-            'expense_date' => $data['expense_date'],
-            'register_by_user_id' => $data['register_by_user_id'],
-            'group_id' => $data['group_id'],
-            'register_payment_user_id' => $data['register_payment_user_id'],
-            'status' => $data['status'],
-            'payment' => $data['payment']
-        ]);
-
-        return $this->renderJson([
-            'message' => 'Despesa atualizada com sucesso!',
-            'expense' => $expense
-        ]);
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request): void
     {
-        $id = $request->getParam('id');
+        $expense = $this->currentUser()->expenses()->findById($request->getParam('id'));
+        $expense->destroy();
 
-        if (!$id) {
-            return $this->renderJson(['error' => 'ID inválido'], ['status' => 400]);
-        }
-
-        $expense = Expense::findById($id);
-        if (!$expense) {
-            return $this->renderJson(['error' => 'Despesa não encontrada'], ['status' => 404]);
-        }
-
-        $deleted = $expense->destroy();
-
-        if (!$deleted) {
-            return $this->renderJson(['error' => 'Erro ao excluir despesa'], ['status' => 500]);
-        }
-
-        return $this->renderJson(['message' => 'Despesa excluída com sucesso!']);
+        $this->renderJson(['message' => 'Despesa excluída com sucesso!']);
     }
 }

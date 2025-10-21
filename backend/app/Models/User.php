@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Core\Database\ActiveRecord\HasMany;
 use Lib\Validations;
 use Core\Database\ActiveRecord\Model;
 
@@ -22,6 +23,11 @@ class User extends Model
 
     protected ?string $password = null;
     protected ?string $password_confirmation = null;
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class, 'register_by_user_id');
+    }
 
     public function validates(): void
     {

@@ -10,7 +10,7 @@ use Core\Database\ActiveRecord\Model;
  * @property int $owner_user_id
  * @property string $created_at
  */
-class Groups extends Model
+class Group extends Model
 {
     protected static string $table = 'groups';
     protected static array $columns = ['name','description','owner_user_id', 'created_at'];

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Models;
+
+use Core\Database\ActiveRecord\BelongsTo;
 use Core\Database\ActiveRecord\Model;
 
 /**
@@ -31,4 +33,10 @@ class Expense extends Model
         'status',
         'payment'
     ];
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'register_by_user_id');
+    }
 }
