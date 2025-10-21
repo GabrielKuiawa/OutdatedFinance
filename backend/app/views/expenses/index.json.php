@@ -9,12 +9,11 @@ foreach ($expenses as $expense){
         'amount' => $expense->amount,
         'expense_date' => $expense->expense_date,
         'register_by_user_id' => $expense->register_by_user_id,
-        'group_user_id' => $expense->group_user_id,
+        'group_id' => $expense->group_id,
         'register_payment_user_id' => $expense->register_payment_user_id,
         'status' => $expense->status,
         'payment' => $expense->payment,
         'created_at' => $expense->created_at,
-        'deleted_at' => $expense->deleted_at,
     ];
 
 }

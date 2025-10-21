@@ -22,7 +22,10 @@ CREATE TABLE users (
 CREATE TABLE `groups` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    description TEXT,
+    owner_user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE group_users (
@@ -46,18 +49,17 @@ CREATE TABLE expenses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    amount FLOAT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
     expense_date DATE NOT NULL,
     register_by_user_id INT NOT NULL,
-    group_user_id INT NOT NULL,
-     tag_id INT,
+    group_id INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     register_payment_user_id INT,
     status ENUM('pendente', 'pago', 'atrasado') DEFAULT 'pendente',
     payment ENUM('cartao', 'pix', 'dinheiro'),
     FOREIGN KEY (register_by_user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (group_user_id) REFERENCES group_users(id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE SET NULL
+    FOREIGN KEY (group_id) REFERENCES group_users(id) ON DELETE CASCADE,
+    FOREIGN KEY (register_payment_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE expenses_tags (
