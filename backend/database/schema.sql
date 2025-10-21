@@ -50,7 +50,7 @@ CREATE TABLE expenses (
     expense_date DATE NOT NULL,
     register_by_user_id INT NOT NULL,
     group_user_id INT NOT NULL,
-    tag_id INT,
+     tag_id INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     register_payment_user_id INT,
     status ENUM('pendente', 'pago', 'atrasado') DEFAULT 'pendente',
