@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Core\Database\ActiveRecord\Model;
+
 /**
  * @property int $id
  * @property string $name

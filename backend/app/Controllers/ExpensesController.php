@@ -23,7 +23,7 @@ class ExpensesController extends Controller
         }
     }
 
-    public function create(Request $request): void 
+    public function create(Request $request): void
     {
         $params = $request->getParams();
         $expense = $this->currentUser()->expenses()->new($params);

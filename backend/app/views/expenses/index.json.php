@@ -1,9 +1,9 @@
 <?php
 
 $expensesToJson = [];
-foreach ($expenses as $expense){
+foreach ($expenses as $expense) {
     $expensesToJson[] = [
-        'id' =>$expense->id,
+        'id' => $expense->id,
         'title' => $expense->title,
         'description' => $expense->description,
         'amount' => $expense->amount,
@@ -15,6 +15,5 @@ foreach ($expenses as $expense){
         'payment' => $expense->payment,
         'created_at' => $expense->created_at,
     ];
-
 }
-$json['expenses'] = $expensesToJson; 
+$json['expenses'] = $expensesToJson;
