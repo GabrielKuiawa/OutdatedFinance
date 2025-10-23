@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Core\Database\ActiveRecord\BelongsTo;
 
 use Core\Database\ActiveRecord\Model;
 
@@ -13,6 +14,11 @@ use Core\Database\ActiveRecord\Model;
  */
 class Group extends Model
 {
-    protected static string $table = 'groups';
+    protected static string $table = '`groups`';
     protected static array $columns = ['name','description','owner_user_id', 'created_at'];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
 }

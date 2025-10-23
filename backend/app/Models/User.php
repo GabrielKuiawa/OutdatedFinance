@@ -29,6 +29,11 @@ class User extends Model
         return $this->hasMany(Expense::class, 'register_by_user_id');
     }
 
+     public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class, 'owner_user_id');
+    }
+
     public function validates(): void
     {
         Validations::notEmpty('name', $this);
