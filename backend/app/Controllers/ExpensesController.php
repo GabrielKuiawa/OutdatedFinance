@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Models\Expense;
 use Core\Http\Request;
 use Core\Http\Controllers\Controller;
 
@@ -41,6 +40,7 @@ class ExpensesController extends Controller
     {
         $id = $request->getParam('id');
         $params = $request->getParams();
+        /** @var \App\Models\Expense $expense */
         $expense = $this->currentUser()->expenses()->findById($id);
 
         $expense->title = $params['title'];

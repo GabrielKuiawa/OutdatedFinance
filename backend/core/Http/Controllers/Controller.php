@@ -41,7 +41,7 @@ class Controller
 
 
     /**
-     * @param array<string, string>|string $view
+     * @param array<string, mixed>|string $view
      * @param array<string, mixed> $data
      */
     protected function renderJson(string|array $view, array $data = []): void
