@@ -2,7 +2,7 @@
 
 namespace App\Models;
 use Core\Database\ActiveRecord\BelongsTo;
-
+use Core\Database\ActiveRecord\BelongsToMany;
 use Core\Database\ActiveRecord\Model;
 
 /**
@@ -21,4 +21,10 @@ class Group extends Model
     {
         return $this->belongsTo(User::class, 'owner_user_id');
     }
+
+    public function members(): BelongsToMany
+    {
+    return $this->belongsToMany(User::class, 'group_users', 'group_id', 'user_id');
+    }
+
 }
