@@ -17,23 +17,18 @@ class ExpensesController extends Controller
     {
         $expense = $this->currentUser()->expenses()->findById($request->getParam('id'));
 
-        if ($expense) {
-            $this->renderJson(['expense' => $expense->toArray()]);
+        if (!$expense) {
+            $this->renderJson(['error' => 'Despesa não encontrada']);
+            return;
         }
+        $this->renderJson(['expense' => $expense->toArray()]);
     }
 
     public function create(Request $request): void
     {
         $params = $request->getParams();
         $expense = $this->currentUser()->expenses()->new($params);
-        if ($expense->save()) {
-            $this->renderJson([
-                'message' => 'Despesa criada com sucesso!',
-                'expense' => $expense->toArray()
-            ]);
-        } else {
-            $this->renderJson(['error' => 'Erro ao criar despesa']);
-        }
+        $this->saveAndRespond($expense, 'Despesa criada com sucesso!', 'expense', 'Erro ao criar despesa!');
     }
 
     public function update(Request $request): void
@@ -52,14 +47,12 @@ class ExpensesController extends Controller
         $expense->status = $params['status'];
         $expense->payment = $params['payment'];
 
-        if ($expense->save()) {
-            $this->renderJson([
-                'message' => 'Despesa atualizada com sucesso!',
-                'expense' => $expense->toArray()
-            ]);
-        } else {
-            $this->renderJson(['error' => 'Erro ao atualizar despesa']);
-        }
+        $this->saveAndRespond(
+            $expense,
+            'As informações da despesa foram atualizadas!',
+            'expense',
+            'Erro ao atualizar as informações da despesa!'
+        );
     }
 
     public function destroy(Request $request): void

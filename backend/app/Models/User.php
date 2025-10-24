@@ -35,7 +35,8 @@ class User extends Model
         return $this->hasMany(Group::class, 'owner_user_id');
     }
 
-    public function memberGroups(): BelongsToMany {
+    public function memberGroups(): BelongsToMany
+    {
         return $this->belongsToMany(Group::class, 'group_users', 'user_id', 'group_id');
     }
 

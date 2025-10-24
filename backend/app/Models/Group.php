@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Core\Database\ActiveRecord\BelongsTo;
 use Core\Database\ActiveRecord\BelongsToMany;
 use Core\Database\ActiveRecord\Model;
@@ -24,7 +25,6 @@ class Group extends Model
 
     public function members(): BelongsToMany
     {
-    return $this->belongsToMany(User::class, 'group_users', 'group_id', 'user_id');
+        return $this->belongsToMany(User::class, 'group_users', 'group_id', 'user_id');
     }
-
 }
