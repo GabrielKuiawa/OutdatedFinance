@@ -7,6 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { login } from "../services/authService";
@@ -94,6 +95,14 @@ export default function LoginScreen() {
           <ActivityIndicator size="small" color="#0000ff" />
         </View>
       )}
+
+      {/* botao pra ver a tela de despesas */}
+      <TouchableOpacity
+        style={styles.testButton}
+        onPress={() => router.push("/expenses/new")}
+      >
+        <Text style={styles.testButtonText}>Ir para Nova Despesa (Teste)</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -115,4 +124,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   loading: { marginTop: 10 },
+  testButton: {
+    marginTop: 20,
+    backgroundColor: "#28a745",
+    padding: 12,
+    borderRadius: 8,
+  },
+  testButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+  },
 });
