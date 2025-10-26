@@ -9,6 +9,8 @@ export default function useFetch<T>(url?: string, token?:string): {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  console.log(url);
+  
 
   useEffect(() => {
     if (!url) return;
@@ -20,7 +22,7 @@ export default function useFetch<T>(url?: string, token?:string): {
           },
         });
         setData(response.data);
-      } catch (err) {
+      } catch (err) {        
         setError(err as Error);
       } finally {
         setLoading(false);

@@ -99,7 +99,7 @@ export default function LoginScreen() {
       {/* botao pra ver a tela de despesas */}
       <TouchableOpacity
         style={styles.testButton}
-        onPress={() => router.push("/expenses/new")}
+        onPress={() => router.push("/expenses")}
       >
         <Text style={styles.testButtonText}>Ir para Nova Despesa (Teste)</Text>
       </TouchableOpacity>

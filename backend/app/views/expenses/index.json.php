@@ -16,8 +16,8 @@ foreach ($expenses as $expense) {
         'created_at' => $expense->created_at,
     ];
 }
-$nextPage = 'http://localhost/api/expenses/page/' . $paginator->nextPage();
-$previousPage = 'http://localhost/api/expenses/page/' . $paginator->previousPage();
+$nextPage = $_ENV['API_HOST'].'/api/expenses/page/'. $paginator->nextPage();
+$previousPage = $_ENV['API_HOST'].'/api/expenses/page/' . $paginator->previousPage();
 if ($paginator->nextPage() == null) {
     $nextPage = null;
 }

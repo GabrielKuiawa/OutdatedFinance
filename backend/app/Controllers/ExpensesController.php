@@ -9,7 +9,7 @@ class ExpensesController extends Controller
 {
     public function index(Request $request): void
     {
-        $paginator = $this->currentUser()->expenses()->paginate(page: $request->getParam('page', 1), per_page: 2);
+        $paginator = $this->currentUser()->expenses()->paginate(page: $request->getParam('page', 1), per_page: 10);
         $expenses = $paginator->registers();
         $this->renderJson("expenses/index", compact('paginator', 'expenses'));
     }

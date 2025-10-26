@@ -3,10 +3,10 @@ import useFetch from "./useFetch";
 import { PaginatedResponse } from "../types/PaginatedResponse";
 
 
-export function useInfiniteFetch<T>(initialUrl: string) {
+export function useInfiniteFetch<T>(initialUrl: string, token: string) {
   const [url, setUrl] = useState(initialUrl);
   const [items, setItems] = useState<T[]>([]);
-  const { data, loading, error } = useFetch<PaginatedResponse<T>>(url);
+  const { data, loading, error } = useFetch<PaginatedResponse<T>>(url,token);
 
   useEffect(() => {
     setUrl(initialUrl);
