@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "@/env";
 
 
-const BASE_URL: string = 'http://192.168.3.103'; 
+const BASE_URL: string = API_BASE_URL; 
 
 export interface LoginData {
   token?: string; 
@@ -53,7 +54,7 @@ const performLogin = async (endpoint: string, email: string, password: string): 
 
 
 export const login = (email: string, password: string): Promise<LoginResponse> => {
-  return performLogin('/api/login', email, password);
+  return performLogin('/login', email, password);
 };
 
 

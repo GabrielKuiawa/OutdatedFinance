@@ -16,4 +16,18 @@ foreach ($expenses as $expense) {
         'created_at' => $expense->created_at,
     ];
 }
-$json['expenses'] = $expensesToJson;
+$nextPage = 'http://localhost/api/expenses/page/' . $paginator->nextPage();
+$previousPage = 'http://localhost/api/expenses/page/' . $paginator->previousPage();
+if ($paginator->nextPage() == null) {
+    $nextPage = null;
+}
+
+if ($paginator->previousPage() == null) {
+    $previousPage = null;
+}
+
+$json['results'] = $expensesToJson;
+$json += [
+    'previous'                   => $previousPage,
+    'next'                       => $nextPage
+];

@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/users', [UsersController::class, 'getUsers'])->name('api.users');
 
     Route::get('/api/expenses', [ExpensesController::class, 'index']);
+    Route::get('/api/expenses/page/{page}', [ExpensesController::class, 'index']);
     Route::get('/api/expenses/{id}', [ExpensesController::class, 'show']);
     Route::post('/api/expenses', [ExpensesController::class, 'create']);
     Route::put('/api/expenses/{id}', [ExpensesController::class, 'update']);

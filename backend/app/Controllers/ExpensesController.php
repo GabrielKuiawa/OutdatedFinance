@@ -7,10 +7,11 @@ use Core\Http\Controllers\Controller;
 
 class ExpensesController extends Controller
 {
-    public function index(): void
+    public function index(Request $request): void
     {
-        $expenses = $this->currentUser()->expenses()->get();
-        $this->renderJson("expenses/index", compact('expenses'));
+        $paginator = $this->currentUser()->expenses()->paginate(page: $request->getParam('page', 1), per_page: 2);
+        $expenses = $paginator->registers();
+        $this->renderJson("expenses/index", compact('paginator','expenses'));
     }
 
     public function show(Request $request): void
