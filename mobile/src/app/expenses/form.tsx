@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,11 +9,23 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { saveExpenseApi } from "@/src/services/api";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import {
+  ApiService,
+  deleteExpenseApi,
+  saveExpenseApi,
+  updateExpenseApi,
+} from "@/src/services/api";
+import { Expense } from "@/src/types/Expense";
+import useFetch from "@/src/hooks/useFetch";
+import { API_BASE_URL, Token } from "@/env";
 
 export default function NewExpense() {
   const router = useRouter();
+  const { id } = useLocalSearchParams();
+  const navigation = useNavigation();
+  const isEdit = !!id;
+  const [expense, setExpense] = useState<Expense | null>(null);
   const [title, setTitle] = useState("testeMobileeeeeee");
   const [amount, setAmount] = useState("09");
   const [description, setDescription] = useState("deee");
@@ -24,6 +36,32 @@ export default function NewExpense() {
   const [payment, setPayment] = useState<"pix" | "cartao" | "dinheiro" | "">(
     "pix"
   );
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: isEdit ? "Editar Despesa" : "Nova Despesa",
+    });
+  }, [isEdit]);
+
+  const expenseResult = ApiService.getExpenseByIdApi(Number(id), isEdit) ?? {
+    data: null,
+    loading: false,
+    error: null,
+  };
+  const { data: expenseData, error } = expenseResult;
+
+  // console.log(expenseData?.expense?.payment);
+
+  useEffect(() => {
+    if (expenseData) {
+      setTitle(expenseData?.expense?.title || "");
+      setAmount(expenseData?.expense?.amount || "");
+      setDescription(expenseData?.expense?.description || "");
+      setDate(expenseData?.expense?.expense_date || "");
+      setStatus(expenseData?.expense?.status || "");
+      setPayment(expenseData?.expense?.payment || "");
+    }
+  }, [expenseData]);
 
   const handleSave = async () => {
     if (
@@ -41,32 +79,73 @@ export default function NewExpense() {
       Alert.alert("Erro", "O valor deve ser um número válido.");
       return;
     }
+    if (!isEdit) {
+      const { data } = await saveExpenseApi({
+        title,
+        amount,
+        description,
+        expense_date: date,
+        register_by_user_id: 2,
+        status,
+        payment,
+        created_at: "2025-10-21 12:06:32",
+      });
 
-    const { data } = await saveExpenseApi({
-      title,
-      amount,
-      description,
-      expense_date: date,
-      register_by_user_id: 2,
-      status,
-      payment,
-      created_at: "2025-10-21 12:06:32",
-    });
+      if (data) {
+        Alert.alert("Sucesso", "Despesa salva com sucesso!");
+        setTitle("");
+        setAmount("");
+        setDescription("");
+        setDate("");
+        setStatus("");
+        setPayment("");
+        router.push("/expenses");
+        return;
+      }
+    } else {
+      const { data, error } = await updateExpenseApi(Number(id), {
+        title,
+        amount,
+        description,
+        expense_date: date,
+        register_by_user_id: 2,
+        group_id: null,
+        register_payment_user_id: null,
+        status,
+        payment,
+        created_at: "2025-10-21 12:06:32",
+      });
+      console.log(error);
 
-    if (data) {
-      Alert.alert("Sucesso", "Despesa salva com sucesso!");
-      setTitle("");
-      setAmount("");
-      setDescription("");
-      setDate("");
-      setStatus("");
-      setPayment("");
-      router.push("/expenses");
-      return;
+      if (data) {
+        Alert.alert("Sucesso", "Despesa Aleterada com sucesso!");
+        setTitle("");
+        setAmount("");
+        setDescription("");
+        setDate("");
+        setStatus("");
+        setPayment("");
+        router.push("/expenses");
+        return;
+      }
     }
     Alert.alert("Erro", "Não foi possível salvar a despesa.");
   };
 
+  const handleDelete = () => {
+    Alert.alert("Confirmação", "Tem certeza que deseja excluir?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          Alert.alert("Excluída", "Despesa removida com sucesso!");
+          deleteExpenseApi(Number(id));
+          router.back();
+        },
+      },
+    ]);
+  };
   return (
     <ScrollView
       style={styles.container}
@@ -156,11 +235,28 @@ export default function NewExpense() {
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Salvar</Text>
       </TouchableOpacity>
+      {isEdit && (
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <Text style={styles.deleteText}>Excluir Despesa</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  deleteButton: {
+    marginTop: 15,
+    backgroundColor: "#EF4444",
+    paddingVertical: 14,
+    borderRadius: 10,
+  },
+  deleteText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "700",
+  },
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",

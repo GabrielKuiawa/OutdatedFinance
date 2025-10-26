@@ -8,9 +8,7 @@ export default function useFetch<T>(url?: string, token?:string): {
 } {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  console.log(url);
-  
+  const [error, setError] = useState<Error | null>(null); 
 
   useEffect(() => {
     if (!url) return;

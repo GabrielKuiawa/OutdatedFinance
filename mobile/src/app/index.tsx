@@ -42,7 +42,7 @@ export default function LoginScreen() {
           router.push("/homeAdmin");
         } else if (role === "user") {
           Alert.alert("Sucesso", "Login de Usuário efetuado com sucesso!");
-          router.push("/home");
+          router.push("/expenses");
         } else {
           Alert.alert("Erro", "Usuário inválido.");
         }

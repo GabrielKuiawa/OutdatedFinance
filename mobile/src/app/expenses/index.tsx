@@ -8,20 +8,15 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Expense } from "@/src/types/Expense";
-import { API_BASE_URL } from "@/env";
+import { API_BASE_URL, Token } from "@/env";
 import { useInfiniteFetch } from "@/src/hooks/useInfiniteFetch";
-let token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJlbWFpbCI6InVzZXIxQGVtYWlsIiwicm9sZSI6InVzZXIifSwiZXhwIjoxNzYxNTExNjUzfQ.";
+import { ApiService } from "@/src/services/api";
+
 export default function ExpensesList() {
   const router = useRouter();
-  console.log(`${API_BASE_URL}/expenses/page/1`);
   
   const [expenses, setExpenses] = useState<Expense[]>();
-  const { data, error, loadMore } = useInfiniteFetch<Expense>(
-    `${API_BASE_URL}/expenses/page/1`,
-    token
-  );
-  // console.log(error?.name);
+  const { data, error, loadMore } = ApiService.getExpensesInfiniteApi();
 
   useEffect(() => {
     if (data) {
@@ -45,7 +40,7 @@ export default function ExpensesList() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}
-            onPress={() => router.push(`/expenses/${item.id}`)}
+            onPress={() => router.push(`/expenses/form?id=${item.id}`)}
           >
             <View style={{ flex: 1 }}>
               <Text style={styles.title}>{item.title}</Text>
@@ -63,7 +58,7 @@ export default function ExpensesList() {
 
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => router.push("/expenses/new")}
+        onPress={() => router.push("/expenses/form")}
       >
         <Text style={styles.addText}>+ Nova Despesa</Text>
       </TouchableOpacity>

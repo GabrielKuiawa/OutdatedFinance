@@ -17,3 +17,20 @@ export async function postApi<T>(
     return { data: null, error: err as Error };
   }
 }
+
+export async function useDelete<T>(
+  url: string,
+  token?: string
+): Promise<{ data: T | null; error: Error | null }> {
+  try {
+    const response = await axios.delete(url, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+    return { data: response.data, error: null };
+  } catch (err) {
+    return { data: null, error: err as Error };
+  }
+}

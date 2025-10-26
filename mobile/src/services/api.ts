@@ -1,9 +1,33 @@
-import { API_BASE_URL } from "@/env";
-import { Expense, ExpenseResponse } from "../types/Expense";
+import { API_BASE_URL, Token } from "@/env";
+import { Expense, ExpenseDetail, ExpenseResponse } from "../types/Expense";
 import { postApi } from "../hooks/usePost";
-import { use } from "react";
 import useFetch from "../hooks/useFetch";
+import { useInfiniteFetch } from "../hooks/useInfiniteFetch";
+import { useUpdate } from "../hooks/useUpdate";
+import { getData } from "./storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const getToken = async () => {
+  const token = await getData("userToken");
+  return token;
+};
 
+export const ApiService = {
+  getExpensesApi() {
+    const { data, error } = useFetch<ExpenseResponse>(
+      `${API_BASE_URL}/expenses`,
+      Token
+    );
+    return data;
+  },
+  getExpenseByIdApi(id: number, editMode = false) {
+    if (editMode)
+      return useFetch<ExpenseDetail>(`${API_BASE_URL}/expenses/${id}`, Token);
+    return;
+  },
+  getExpensesInfiniteApi() {    
+    return useInfiniteFetch<Expense>(`${API_BASE_URL}/expenses/page/1`,Token);
+  },
+};
 export async function loginApi(email: string, password: string) {
   const response = await fetch(API_BASE_URL + "/login", {
     method: "POST",
@@ -13,24 +37,29 @@ export async function loginApi(email: string, password: string) {
   return response.json();
 }
 
-let token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyLCJlbWFpbCI6InVzZXIxQGVtYWlsIiwicm9sZSI6InVzZXIifSwiZXhwIjoxNzYxNTAzOTc3fQ.";
-
 export async function saveExpenseApi(expense: Expense) {
   const { data, error } = await postApi<Expense>(
     `${API_BASE_URL}/expenses`,
     expense,
-    token
+    Token
   );
   return { data, error };
 }
-
-export function getExpensesApi() {
-  const { data, error } =  useFetch<ExpenseResponse>(
-    `${API_BASE_URL}/expenses`,
-    token
+export async function updateExpenseApi(id: number, expense: Expense) {
+  const { data, error } = await useUpdate<Expense>(
+    `${API_BASE_URL}/expenses/${id}`,
+    expense,
+    Token
   );
-  // console.log(data);
-  
-  return data;
+  return { data, error };
+}
+export async function deleteExpenseApi(id: number) {
+  const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${Token}`,
+    },
+  });
+  return response.json();
 }
