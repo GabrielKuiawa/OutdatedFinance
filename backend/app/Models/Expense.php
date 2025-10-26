@@ -39,4 +39,20 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class, 'register_by_user_id');
     }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+    
+    public function registeredPaymentBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'register_payment_user_id');
+    }
+
+    public function groupUser(): BelongsTo
+    {
+        return $this->belongsTo(GroupUser::class, 'group_users');
+    }
+
 }

@@ -40,6 +40,8 @@ class User extends Model
         return $this->belongsToMany(Group::class, 'group_users', 'user_id', 'group_id');
     }
 
+
+
     public function validates(): void
     {
         Validations::notEmpty('name', $this);
