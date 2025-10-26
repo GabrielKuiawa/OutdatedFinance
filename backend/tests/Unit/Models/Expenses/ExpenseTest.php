@@ -5,7 +5,7 @@ namespace Tests\Unit\Models\Expense;
 use App\Models\Expense;
 use Tests\TestCase;
 
-class ExpenseTest extends TestCase 
+class ExpenseTest extends TestCase
 {
     public Expense $expense;
 
@@ -24,7 +24,7 @@ class ExpenseTest extends TestCase
         $this->expense->created_at = date('Y-m-d H:i:s');
     }
 
-   
+
     public function test_expense_properties(): void
     {
         $this->assertEquals('Teste de despesa', $this->expense->title);

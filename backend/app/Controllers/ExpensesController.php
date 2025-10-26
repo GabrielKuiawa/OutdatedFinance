@@ -11,7 +11,7 @@ class ExpensesController extends Controller
     {
         $paginator = $this->currentUser()->expenses()->paginate(page: $request->getParam('page', 1), per_page: 2);
         $expenses = $paginator->registers();
-        $this->renderJson("expenses/index", compact('paginator','expenses'));
+        $this->renderJson("expenses/index", compact('paginator', 'expenses'));
     }
 
     public function show(Request $request): void
