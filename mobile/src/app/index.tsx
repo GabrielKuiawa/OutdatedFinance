@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, ActivityIndicator, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { login } from '@/services/authService';
-
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { login } from "../services/authService";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Erro', 'Preencha todos os campos.');
+      Alert.alert("Erro", "Preencha todos os campos.");
       return;
     }
-    await loginRequest()
+    await loginRequest();
   };
 
   const loginRequest = async () => {
@@ -23,29 +31,34 @@ export default function LoginScreen() {
     try {
       let result = await login(email, password);
 
-      if(result.success) {
+      if (result.success) {
         const role = result.data.role;
 
-        if(role === 'admin'){
-          Alert.alert('Sucesso', 'Login de Administrador efetuado com sucesso!');
-          router.push('/homeAdmin');
-        } else if(role === 'user') {
-          Alert.alert('Sucesso', 'Login de Usuário efetuado com sucesso!');
-          router.push('/home');
-        }else {
-          Alert.alert('Erro', 'Usuário inválido.');
+        if (role === "admin") {
+          Alert.alert(
+            "Sucesso",
+            "Login de Administrador efetuado com sucesso!"
+          );
+          router.push("/homeAdmin");
+        } else if (role === "user") {
+          Alert.alert("Sucesso", "Login de Usuário efetuado com sucesso!");
+          router.push("/expenses");
+        } else {
+          Alert.alert("Erro", "Usuário inválido.");
         }
         return;
       }
 
-    Alert.alert('Erro de Login', 'E-mail ou senha inválida.');
-    }catch (error) {
+      Alert.alert("Erro de Login", "E-mail ou senha inválida.");
+    } catch (error) {
       console.error(error);
-      Alert.alert('Erro de Conexão', 'Não foi possível completar a requisição.');
+      Alert.alert(
+        "Erro de Conexão",
+        "Não foi possível completar a requisição."
+      );
     } finally {
       setIsLoading(false);
     }
-      
   };
 
   return (
@@ -72,7 +85,7 @@ export default function LoginScreen() {
       />
 
       <Button
-        title={isLoading ? 'Carregando...' : 'Entrar'}
+        title={isLoading ? "Carregando..." : "Entrar"}
         onPress={handleLogin}
         disabled={isLoading}
       />
@@ -82,13 +95,44 @@ export default function LoginScreen() {
           <ActivityIndicator size="small" color="#0000ff" />
         </View>
       )}
+
+      {/* botao pra ver a tela de despesas */}
+      <TouchableOpacity
+        style={styles.testButton}
+        onPress={() => router.push("/expenses")}
+      >
+        <Text style={styles.testButtonText}>Ir para Nova Despesa (Teste)</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 30, textAlign: 'center' },
-  input: { height: 50, borderColor: '#ccc', borderWidth: 1, marginBottom: 15, paddingHorizontal: 15, borderRadius: 8 },
+  container: { flex: 1, justifyContent: "center", padding: 20 },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 30,
+    textAlign: "center",
+  },
+  input: {
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    marginBottom: 15,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
   loading: { marginTop: 10 },
+  testButton: {
+    marginTop: 20,
+    backgroundColor: "#28a745",
+    padding: 12,
+    borderRadius: 8,
+  },
+  testButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+  },
 });

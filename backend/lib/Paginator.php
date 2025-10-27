@@ -53,13 +53,19 @@ class Paginator
         return $this->totalOfPages;
     }
 
-    public function previousPage(): int
+    public function previousPage(): int|null
     {
+        if ($this->page <= 1) {
+            return null;
+        }
         return $this->page - 1;
     }
 
-    public function nextPage(): int
+    public function nextPage(): int|null
     {
+        if ($this->page >= $this->totalOfPages) {
+            return null;
+        }
         return $this->page + 1;
     }
 
