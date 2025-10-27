@@ -47,8 +47,6 @@ class UsersPopulate
                 'deleted_at' => null
             ]);
             
-            $user->validates();
-            $user->authenticate($password);
             $user->save();
         } catch (\Exception $e) {
             echo "Error creating user $email: " . $e->getMessage() . PHP_EOL;
