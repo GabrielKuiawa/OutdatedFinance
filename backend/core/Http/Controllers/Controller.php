@@ -41,7 +41,7 @@ class Controller
 
 
     /**
-     * @param array<string, string>|string $view
+     * @param array<string, mixed>|string $view
      * @param array<string, mixed> $data
      */
     protected function renderJson(string|array $view, array $data = []): void
@@ -72,5 +72,24 @@ class Controller
     {
         $referer = $_SERVER['HTTP_REFERER'] ?? '/';
         $this->redirectTo($referer);
+    }
+
+    /**
+     * @param mixed $model
+     */
+    protected function saveAndRespond(
+        $model,
+        string $successMessage,
+        string $resourceKey = 'group',
+        ?string $errorMessage = null
+    ): void {
+        if ($model->save()) {
+            $this->renderJson([
+                'message' => $successMessage,
+                $resourceKey => $model->toArray()
+            ]);
+        } else {
+            $this->renderJson(['error' => $errorMessage ?? 'Erro ao salvar o recurso']);
+        }
     }
 }
