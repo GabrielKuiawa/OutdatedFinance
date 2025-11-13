@@ -8,9 +8,9 @@ class Tag extends Model
 {
     protected static string $table = 'tags';
 
-    protected array $fillable = [ 
-        'name',      
-        'user_id',   
+    protected array $fillable = [
+        'name',
+        'user_id',
     ];
 
     public function validate(): void

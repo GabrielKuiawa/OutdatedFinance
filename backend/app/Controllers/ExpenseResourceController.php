@@ -43,12 +43,10 @@ class ExpenseResourceController extends Controller
         $expenses = $this->currentUser()->expenses()->findById($expenseId);
         /** @var \App\Models\Resource $resource */
         $resource = $expenses->resource()->findById($fileId);
-
         if (!$resource) {
             $this->renderJson(['error' => 'Resource not found']);
             return;
         }
-
         if ($resource->resourceFiles()->deleteImage()) {
             $this->renderJson(['message' => 'File deleted successfully']);
         }

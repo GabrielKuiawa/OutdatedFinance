@@ -56,7 +56,7 @@ class Expense extends Model
     {
         return $this->belongsTo(GroupUser::class, 'group_users');
     }
-    
+
     public function resource(): HasMany
     {
         return $this->hasMany(Resource::class, 'expenses_id');

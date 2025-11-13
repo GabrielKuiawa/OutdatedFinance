@@ -16,7 +16,8 @@ class FileService
         private Model $model,
         private string $storeDir,
         private array $validations = [],
-    ) {}
+    ) {
+    }
 
     public function path(): string
     {
@@ -171,7 +172,7 @@ class FileService
         }
 
         $absolutePath = Constants::rootPath()->join('public' . $filePath);
-    
+
         if ($this->model->destroy()) {
             if (file_exists($absolutePath)) {
                 unlink($absolutePath);

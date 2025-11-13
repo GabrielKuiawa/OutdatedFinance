@@ -1,4 +1,5 @@
 <?php
+
 $resourcesToJson = [];
 foreach ($resources as $resource) {
     $resourcesToJson[] = [

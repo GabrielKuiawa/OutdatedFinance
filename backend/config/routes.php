@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/expenses', [ExpensesController::class, 'create']);
     Route::put('/api/expenses/{id}', [ExpensesController::class, 'update']);
     Route::delete('/api/expenses/{id}', [ExpensesController::class, 'destroy']);
-    
+
     Route::get('/api/expenses/{id}/files', [ExpenseResourceController::class, 'index']);
     Route::post('/api/expenses/{id}/files', [ExpenseResourceController::class, 'create']);
     Route::delete('/api/expenses/{id}/files/{file_id}', [ExpenseResourceController::class, 'destroy']);
@@ -28,7 +28,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/groups', [GroupController::class, 'create']);
     Route::put('/api/groups/{id}', [GroupController::class, 'update']);
     Route::delete('/api/groups/{id}', [GroupController::class, 'destroy']);
-
 });
 
 Route::middleware('admin')->group(function () {
