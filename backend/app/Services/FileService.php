@@ -7,83 +7,110 @@ use Core\Database\ActiveRecord\Model;
 
 class FileService
 {
-    // pra guardar o arquivo temporariamente
-    private array $file;
+    /** @var array<string, mixed> $image */
+    private array $image;
+    private string $file_name;
 
-    // recebe uma instância do model a resource
+    /** @param array<string, mixed> $validations */
     public function __construct(
-        private Model $model
-    ) {
-    }
+        private Model $model,
+        private string $storeDir,
+        private array $validations = [],
+    ) {}
 
-    // retorna o caminho público da imagem pra mostrar no front
     public function path(): string
     {
-        // se tiver um arquivo salvo no banco retorna o caminho dele
-        if ($this->model->file_path) {
-            return $this->baseDir() . $this->model->file_path;
+        if (!empty($this->model->file_path)) {
+            // Generate MD5 hash of the avatar file to use as cache buster in URL
+            // aqui gera o hash para forçar o navegador a recarregar se o arquivo mudar (por isso tbm da ?)
+            $filePath = $this->getAbsoluteSavedFilePath();
+
+            // Return the avatar URL with hash parameter to force browser to reload when file changes
+            if (file_exists($filePath)) {
+                $hash = md5_file($filePath);
+                return $this->baseDir() . $this->model->file_path . '?' . $hash;
+            }
         }
 
-        // se não tiver retorna uma imagem padrão
         return "/assets/images/defaults/no-image.png";
     }
 
-    // método pra atualizar ou salvar o arquivo
-    public function update(array $file): void
+    /**
+     * @param array<string, mixed> $image
+     */
+    public function upload(array $image): bool
     {
-        // guarda o arquivo enviado
-        $this->file = $file;
+        $this->image = $image;
 
-        // verifica se o arquivo temporário existe
-        if (!empty($this->getTmpFilePath())) {
-            // remove o arquivo antigo (se existir)
-            $this->removeOldFile();
-            // atualiza o nome do arquivo no banco
-            $this->model->update(['file_path' => $this->getFileName()]);
-            // move o novo arquivo para o diretório certo
-            move_uploaded_file($this->getTmpFilePath(), $this->getAbsoluteFilePath());
+        if (!$this->isValidImage()) {
+            return false;
         }
+        $this->file_name = time() . "-" . md5_file($this->getTmpFilePath());
+
+        $this->model->file_path = '/assets/uploads/uploads/resources/' . $this->getFileName();
+        if ($this->model->save()) {
+            $this->updateFile();
+            return true;
+        }
+
+        return false;
     }
 
-    // retorna o caminho temporário do upload
+    protected function updateFile(): bool
+    {
+        if (empty($this->getTmpFilePath())) {
+            return false;
+        }
+
+        $this->removeOldImage();
+
+        $resp = move_uploaded_file(
+            $this->getTmpFilePath(),
+            $this->getAbsoluteDestinationPath()
+        );
+
+        if (!$resp) {
+            $error = error_get_last();
+            throw new \RuntimeException(
+                'Failed to move uploaded file: ' . ($error['message'] ?? 'Unknown error')
+            );
+        }
+
+        return true;
+    }
+
     private function getTmpFilePath(): string
     {
-        return $this->file['tmp_name'];
+        return $this->image['tmp_name'] ?? '';
     }
 
-    // remove o arquivo antigo se tiver
-    private function removeOldFile(): void
+    private function removeOldImage(): void
     {
         if ($this->model->file_path) {
-            $path = Constants::rootPath()->join('public' . $this->baseDir())->join($this->model->file_path);
-            if (file_exists($path)) {
-                unlink($path); // apaga o arquivo
+            $oldPath = $this->getAbsoluteSavedFilePath();
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
             }
         }
     }
 
-    // gera um novo nome único pro arquivo
     private function getFileName(): string
     {
-        $file_name_splitted  = explode('.', $this->file['name']);
-        $file_extension = end($file_name_splitted);
-        // gera nome tipo "resource_abc123.jpg"
-        return uniqid('resource_') . '.' . $file_extension;
+        $parts = explode('.', $this->image['name']);
+        $extension = strtolower(end($parts));
+        return "{$this->file_name}.{$extension}";
     }
 
-    // retorna o caminho completo (absoluto) pra onde o arquivo vai ser salvo
-    private function getAbsoluteFilePath(): string
+    private function getAbsoluteDestinationPath(): string
     {
         return $this->storeDir() . $this->getFileName();
     }
 
-    // monta o caminho base dentro de /public/assets/uploads
     private function baseDir(): string
     {
-        return "/assets/uploads/{$this->model::table()}/{$this->model->id}/";
+        return "/assets/uploads/{$this->storeDir}/";
     }
 
-    // cria o diretório se ele não existir
     private function storeDir(): string
     {
         $path = Constants::rootPath()->join('public' . $this->baseDir());
@@ -92,5 +119,84 @@ class FileService
         }
 
         return $path;
+    }
+
+    private function getAbsoluteSavedFilePath(): string
+    {
+        return Constants::rootPath()
+            ->join('public' . $this->baseDir())
+            ->join($this->model->file_path);
+    }
+
+    private function isValidImage(): bool
+    {
+        if (isset($this->validations['extension'])) {
+            $this->validateImageExtension();
+        }
+
+        if (empty($this->getTmpFilePath())) {
+            $this->model->addError('image', 'Não pode ser vazia');
+        }
+
+        if (isset($this->validations['size'])) {
+            $this->validateImageSize();
+        }
+
+        return $this->model->errors('image') === null;
+    }
+
+    private function validateImageExtension(): void
+    {
+        $parts = explode('.', $this->image['name']);
+        $extension = strtolower(end($parts));
+
+        if (!in_array($extension, $this->validations['extension'])) {
+            $this->model->addError('image', 'Extensão de arquivo inválida.');
+        }
+    }
+
+    private function validateImageSize(): void
+    {
+        if ($this->image['size'] > $this->validations['size']) {
+            $this->model->addError('avatar', 'Tamanho do arquivo inválido');
+        }
+    }
+
+    public function deleteImage(): bool
+    {
+        $filePath = $this->model->file_path ?? null;
+
+        if (empty($filePath)) {
+            return false;
+        }
+
+        $absolutePath = Constants::rootPath()->join('public' . $filePath);
+    
+        if ($this->model->destroy()) {
+            if (file_exists($absolutePath)) {
+                unlink($absolutePath);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    public function formatedArrayFile(array $files): array
+    {
+        $normalizedFiles = [];
+        if (isset($files['name']) && is_array($files['name'])) {
+            foreach ($files['name'] as $index => $name) {
+                $normalizedFiles[] = [
+                    'name' => $name,
+                    'full_path' => $files['full_path'][$index] ?? null,
+                    'type' => $files['type'][$index] ?? null,
+                    'tmp_name' => $files['tmp_name'][$index] ?? null,
+                    'error' => $files['error'][$index] ?? null,
+                    'size' => $files['size'][$index] ?? null,
+                ];
+            }
+        }
+        return $normalizedFiles;
     }
 }

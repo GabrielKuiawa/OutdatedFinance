@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\FileService;
 use Core\Database\ActiveRecord\BelongsTo;
+use Core\Database\ActiveRecord\HasMany;
 use Core\Database\ActiveRecord\Model;
 
 /**
@@ -53,5 +55,10 @@ class Expense extends Model
     public function groupUser(): BelongsTo
     {
         return $this->belongsTo(GroupUser::class, 'group_users');
+    }
+    
+    public function resource(): HasMany
+    {
+        return $this->hasMany(Resource::class, 'expenses_id');
     }
 }

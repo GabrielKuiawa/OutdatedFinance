@@ -2,69 +2,57 @@
 
 namespace App\Controllers;
 
-use App\Models\Expense;
-use App\Models\Resource;
-use App\Services\FileService;
+use Core\Http\Controllers\Controller;
 use Core\Http\Request;
-use Core\Http\Response;
 
-class ExpenseResourceController
+class ExpenseResourceController extends Controller
 {
-    // método pra fazer upload de arquivo e associar à despesa
-    public function create(Request $request, int $expenseId): Response
+    public function index(Request $request): void
     {
-        // procura a despesa pelo id
-        $expense = Expense::find($expenseId);
+        /** @var \App\Models\Expense $expenses */
+        $expenses = $this->currentUser()->expenses()->findById($request->getParam('id'));
+        $resources = $expenses->resource()->get();
+        $this->renderJson("expenses/files/index", compact('resources'));
+    }
 
-        // se não achar, retorna erro
-        if (!$expense) {
-            return Response::json(['error' => 'Expense not found'], 404);
+    public function create(Request $request): void
+    {
+        $files = $request->getParam('files');
+        /** @var \App\Models\Expense $expenses */
+        $expenses = $this->currentUser()->expenses()->findById($request->getParam('id'));
+        /** @var \App\Models\Resource $resource */
+        $resource = $expenses->resource()->new();
+        $normalizedFiles =  $resource->resourceFiles()->formatedArrayFile($files);
+        foreach ($normalizedFiles as $file) {
+            /** @var \App\Models\Resource $resourceInstance */
+            $resourceInstance = $expenses->resource()->new();
+            $resourceInstance->resourceFiles()->upload($file);
         }
-
-        // pega o arquivo enviado no request
-        $file = $request->file('file');
-
-        // se nenhum arquivo foi enviado, retorna erro
-        if (!$file) {
-            return Response::json(['error' => 'No file uploaded'], 400);
-        }
-
-        // cria um registro em branco no banco pro resource
-        $resource = Resource::create([
-            'expenses_id' => $expense->id,
-            'file_path' => '' // será atualizado depois com o nome real
-        ]);
-
-        // usa o serviço pra salvar o arquivo no disco e atualizar o caminho
-        $fileService = new FileService($resource);
-        $fileService->update($file);
-
-        // retorna sucesso e os dados do resource criado
-        return Response::json([
-            'message' => 'Resource uploaded successfully',
-            'resource' => $resource
+        $this->renderJson([
+            'message' => 'Files uploaded successfully',
+            'images' => $normalizedFiles
         ]);
     }
 
-    // método pra deletar um arquivo (resource)
-    public function destroy(int $id): Response
+    public function destroy(Request $request): void
     {
-        // busca o resource no banco
-        $resource = Resource::find($id);
+        $fileId = $request->getParam('file_id');
 
-        // se não existir, retorna erro
+        $expenseId = $request->getParam('id');
+        /** @var \App\Models\Expense $expenses */
+        $expenses = $this->currentUser()->expenses()->findById($expenseId);
+        /** @var \App\Models\Resource $resource */
+        $resource = $expenses->resource()->findById($fileId);
+
         if (!$resource) {
-            return Response::json(['error' => 'Resource not found'], 404);
+            $this->renderJson(['error' => 'Resource not found']);
+            return;
         }
 
-        // usa o serviço pra remover o arquivo físico
-        $fileService = new FileService($resource);
-        $fileService->removeOldFile();
+        if ($resource->resourceFiles()->deleteImage()) {
+            $this->renderJson(['message' => 'File deleted successfully']);
+        }
 
-        // apaga o registro do banco
-        $resource->delete();
-
-        // retorna mensagem de sucesso
-        return Response::json(['message' => 'Resource deleted successfully']);
+        $this->renderJson(['error' => 'Error deleting file']);
     }
 }
