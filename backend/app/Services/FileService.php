@@ -183,9 +183,15 @@ class FileService
         return false;
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $files
+     * @return array<int, array<string, mixed>>
+     */
+
     public function formatedArrayFile(array $files): array
     {
         $normalizedFiles = [];
+
         if (isset($files['name']) && is_array($files['name'])) {
             foreach ($files['name'] as $index => $name) {
                 $normalizedFiles[] = [
