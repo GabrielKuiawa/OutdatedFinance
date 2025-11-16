@@ -19,6 +19,8 @@ import {
 import { Expense } from "@/src/types/Expense";
 import useFetch from "@/src/hooks/useFetch";
 import { API_BASE_URL, Token } from "@/env";
+import MultiImagePicker from "@/src/components/MultiImagePicker";
+import { PickedImage } from "@/src/types/PickedImage";
 
 export default function NewExpense() {
   const router = useRouter();
@@ -36,6 +38,7 @@ export default function NewExpense() {
   const [payment, setPayment] = useState<"pix" | "cartao" | "dinheiro" | "">(
     "pix"
   );
+  const [pickedImages, setPickedImages] = useState<PickedImage[]>([]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -79,6 +82,8 @@ export default function NewExpense() {
       Alert.alert("Erro", "O valor deve ser um número válido.");
       return;
     }
+    console.log(pickedImages);
+    
     if (!isEdit) {
       const { data } = await saveExpenseApi({
         title,
@@ -232,6 +237,7 @@ export default function NewExpense() {
         ))}
       </View>
 
+      <MultiImagePicker onChange={setPickedImages} />
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Salvar</Text>
       </TouchableOpacity>

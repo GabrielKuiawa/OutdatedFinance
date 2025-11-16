@@ -10,6 +10,9 @@ export default function useFetch<T>(url?: string, token?:string): {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null); 
 
+  console.log(token);
+  
+
   useEffect(() => {
     if (!url) return;
     const fetchData = async () => {
