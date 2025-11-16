@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,9 +9,22 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { PickedImage } from "../types/PickedImage";
+import { ApiService } from "../services/api";
 
-export default function MultiImagePicker({ onChange }: { onChange: (imgs: PickedImage[]) => void }) {
+export default function MultiImagePicker({
+  initialImages = [],
+  onChange,
+}: {
+  initialImages?: PickedImage[];
+  onChange: (imgs: PickedImage[]) => void;
+}) {
   const [images, setImages] = useState<PickedImage[]>([]);
+
+  useEffect(() => {
+    if (initialImages.length > 0) {
+      setImages(initialImages);
+    }
+  }, [initialImages]);
 
   async function pickImages() {
     try {

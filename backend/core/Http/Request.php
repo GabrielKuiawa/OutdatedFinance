@@ -30,6 +30,7 @@ class Request
         } else {
             $this->params = array_merge($_REQUEST, $_FILES);
         }
+        // dd($this->params);
     }
 
     public function getMethod(): string

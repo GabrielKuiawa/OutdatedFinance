@@ -6,6 +6,8 @@ import { useInfiniteFetch } from "../hooks/useInfiniteFetch";
 import { useUpdate } from "../hooks/useUpdate";
 import { getData } from "./storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PickedImage } from "../types/PickedImage";
+import { ResultFiles } from "../types/Files";
 const getToken = async () => {
   const token = await getData("userToken");
   return token;
@@ -24,10 +26,14 @@ export const ApiService = {
       return useFetch<ExpenseDetail>(`${API_BASE_URL}/expenses/${id}`, Token);
     return;
   },
-  getExpensesInfiniteApi() {    
-    return useInfiniteFetch<Expense>(`${API_BASE_URL}/expenses/page/1`,Token);
+  getExpensesInfiniteApi() {
+    return useInfiniteFetch<Expense>(`${API_BASE_URL}/expenses/page/1`, Token);
   },
+  getExpensesFileApi(id?: number) {
+    return useFetch<ResultFiles>(`${API_BASE_URL}/expenses/${id}/files`,Token)
+  }
 };
+
 export async function loginApi(email: string, password: string) {
   const response = await fetch(API_BASE_URL + "/login", {
     method: "POST",
@@ -37,8 +43,28 @@ export async function loginApi(email: string, password: string) {
   return response.json();
 }
 
+export async function saveFormData(id: number, pickedImages: PickedImage[]) {
+  const formData = new FormData();
+
+  pickedImages.forEach((img) => {
+    formData.append("files[]", {
+      uri: img.uri,
+      type: img.mimeType,
+      name: img.name,
+      size: img.size,
+    } as any);
+  });
+
+  const { data, error } = await postApi<PickedImage>(
+    `${API_BASE_URL}/expenses/${id}/files`,
+    formData,
+    Token
+  );
+  return { data, error };
+}
+
 export async function saveExpenseApi(expense: Expense) {
-  const { data, error } = await postApi<Expense>(
+  const { data, error } = await postApi<ExpenseDetail>(
     `${API_BASE_URL}/expenses`,
     expense,
     Token

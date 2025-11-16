@@ -6,12 +6,19 @@ export async function postApi<T>(
   token?: string
 ): Promise<{ data: T | null; error: Error | null }> {
   try {
+    const isFormData = body instanceof FormData;
+
+    console.log(body);
+    
     const response = await axios.post(url, body, {
       headers: {
-        "Content-Type": "application/json",
+        ...(isFormData
+          ? { "Content-Type": "multipart/form-data" }
+          : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
+
     return { data: response.data, error: null };
   } catch (err) {
     return { data: null, error: err as Error };

@@ -372,6 +372,9 @@ abstract class Model
      */
     public function toArray(): array
     {
-        return $this->attributes ?? [];
+        return array_merge(
+            ['id' => $this->id],
+            $this->attributes ?? []
+        );
     }
 }

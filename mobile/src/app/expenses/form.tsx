@@ -14,6 +14,7 @@ import {
   ApiService,
   deleteExpenseApi,
   saveExpenseApi,
+  saveFormData,
   updateExpenseApi,
 } from "@/src/services/api";
 import { Expense } from "@/src/types/Expense";
@@ -39,6 +40,7 @@ export default function NewExpense() {
     "pix"
   );
   const [pickedImages, setPickedImages] = useState<PickedImage[]>([]);
+  const [dbImages, setDbImages] = useState<PickedImage[]>([]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -51,9 +53,24 @@ export default function NewExpense() {
     loading: false,
     error: null,
   };
-  const { data: expenseData, error } = expenseResult;
 
-  // console.log(expenseData?.expense?.payment);
+  let files, err;
+
+  if (isEdit) {
+    const { data, error } = ApiService.getExpensesFileApi(Number(id));
+    files = data;
+    err = error;
+  }
+  const images: PickedImage[] =
+    files?.results?.map((file) => ({
+      uri: file.file_path,
+      name: "default.jpg",
+      mimeType: "image/jpeg",
+      size: 0,
+    })) ?? [];
+
+
+  const { data: expenseData, error } = expenseResult;
 
   useEffect(() => {
     if (expenseData) {
@@ -82,8 +99,7 @@ export default function NewExpense() {
       Alert.alert("Erro", "O valor deve ser um número válido.");
       return;
     }
-    console.log(pickedImages);
-    
+
     if (!isEdit) {
       const { data } = await saveExpenseApi({
         title,
@@ -97,6 +113,12 @@ export default function NewExpense() {
       });
 
       if (data) {
+        if (data?.expense.id) {
+          const { data: teste, error: tes } = await saveFormData(
+            data?.expense.id,
+            pickedImages
+          );
+        }
         Alert.alert("Sucesso", "Despesa salva com sucesso!");
         setTitle("");
         setAmount("");
@@ -120,7 +142,6 @@ export default function NewExpense() {
         payment,
         created_at: "2025-10-21 12:06:32",
       });
-      console.log(error);
 
       if (data) {
         Alert.alert("Sucesso", "Despesa Aleterada com sucesso!");
@@ -237,7 +258,11 @@ export default function NewExpense() {
         ))}
       </View>
 
-      <MultiImagePicker onChange={setPickedImages} />
+      {isEdit ? (
+        <MultiImagePicker initialImages={images} onChange={setPickedImages} />
+      ) : (
+        <MultiImagePicker onChange={setPickedImages} />
+      )}
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Salvar</Text>
       </TouchableOpacity>
