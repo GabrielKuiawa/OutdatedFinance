@@ -41,7 +41,7 @@ class ExpenseResourceController extends Controller
         $expenseId = $request->getParam('id');
         /** @var \App\Models\Expense $expenses */
         $expenses = $this->currentUser()->expenses()->findById($expenseId);
-        /** @var \App\Models\Resource $resource */
+        /** @var \App\Models\Resource|null $resource */
         $resource = $expenses->resource()->findById($fileId);
         if (!$resource) {
             $this->renderJson(['error' => 'Resource not found']);

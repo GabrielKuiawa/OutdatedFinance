@@ -5,8 +5,12 @@ namespace App\Models;
 use App\Services\FileService;
 use Core\Database\ActiveRecord\BelongsTo;
 use Core\Database\ActiveRecord\Model;
-use SebastianBergmann\CodeCoverage\Node\File;
 
+/**
+ * @property int $id
+ * @property string $file_path
+ * @property string $expenses_id
+ */
 class Resource extends Model
 {
     protected static string $table =  'resources';

@@ -6,6 +6,7 @@ use App\Services\FileService;
 use Core\Database\ActiveRecord\BelongsTo;
 use Core\Database\ActiveRecord\HasMany;
 use Core\Database\ActiveRecord\Model;
+use Lib\Validations;
 
 /**
  * @property int $id
@@ -36,6 +37,10 @@ class Expense extends Model
         'payment'
     ];
 
+    public function validates(): void
+    {
+        Validations::notEmpty("register_by_user_id", $this);
+    }
 
     public function user(): BelongsTo
     {
