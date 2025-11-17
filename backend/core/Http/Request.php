@@ -28,8 +28,9 @@ class Request
             $json = json_decode($input, true);
             $this->params = is_array($json) ? $json : [];
         } else {
-            $this->params = $_REQUEST;
+            $this->params = array_merge($_REQUEST, $_FILES);
         }
+        // dd($this->params);
     }
 
     public function getMethod(): string

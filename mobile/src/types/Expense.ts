@@ -13,6 +13,7 @@ export type Expense = {
 };
 
 export type ExpenseDetail = {
+  message?: string;
   expense: Expense;
 };
 

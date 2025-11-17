@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\FileService;
 use Core\Database\ActiveRecord\BelongsTo;
+use Core\Database\ActiveRecord\HasMany;
 use Core\Database\ActiveRecord\Model;
+use Lib\Validations;
 
 /**
  * @property int $id
@@ -22,6 +25,7 @@ class Expense extends Model
 {
     protected static string $table = 'expenses';
     protected static array $columns = [
+
         'title',
         'description',
         'amount',
@@ -34,6 +38,10 @@ class Expense extends Model
         'payment'
     ];
 
+    public function validates(): void
+    {
+        Validations::notEmpty("register_by_user_id", $this);
+    }
 
     public function user(): BelongsTo
     {
@@ -53,5 +61,10 @@ class Expense extends Model
     public function groupUser(): BelongsTo
     {
         return $this->belongsTo(GroupUser::class, 'group_users');
+    }
+
+    public function resource(): HasMany
+    {
+        return $this->hasMany(Resource::class, 'expenses_id');
     }
 }
