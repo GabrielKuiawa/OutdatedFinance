@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Resource;
 use Core\Constants\Constants;
 use Core\Database\ActiveRecord\Model;
 
@@ -13,11 +14,10 @@ class FileService
 
     /** @param array<string, mixed> $validations */
     public function __construct(
-        private Model $model,
+        private Resource $model,
         private string $storeDir,
         private array $validations = [],
-    ) {
-    }
+    ) {}
 
     public function path(): string
     {
@@ -184,15 +184,14 @@ class FileService
     }
 
     /**
-     * @param array<int, array<string, mixed>> $files
+     * @param array<string, array<int, mixed>> $files
      * @return array<int, array<string, mixed>>
      */
-
     public function formatedArrayFile(array $files): array
     {
         $normalizedFiles = [];
 
-        if (isset($files['name']) && is_array($files['name'])) {
+        if (!empty($files['name'])) {
             foreach ($files['name'] as $index => $name) {
                 $normalizedFiles[] = [
                     'name' => $name,

@@ -9,14 +9,16 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { PickedImage } from "../types/PickedImage";
-import { ApiService } from "../services/api";
+import { ApiService, deleteExpenseApi, deleteExpenseFileApi } from "../services/api";
 
 export default function MultiImagePicker({
   initialImages = [],
   onChange,
+  idExpense
 }: {
   initialImages?: PickedImage[];
   onChange: (imgs: PickedImage[]) => void;
+  idExpense?:number
 }) {
   const [images, setImages] = useState<PickedImage[]>([]);
 
@@ -57,8 +59,14 @@ export default function MultiImagePicker({
     }
   }
 
-  function removeImage(uri: string) {
+  function removeImage(uri: string, id?:number) {
+    console.log(uri);
+    
     const newList = images.filter((img) => img.uri !== uri);
+    if (initialImages.length > 0) {
+      // deleteExpenseFileApi(idExpense ?? 0,id ?? 0)
+    }
+    
 
     setImages(newList);
 
@@ -69,7 +77,7 @@ export default function MultiImagePicker({
     <View style={styles.thumbContainer}>
       <TouchableOpacity
         style={styles.removeButton}
-        onPress={() => removeImage(item.uri)}
+        onPress={() => removeImage(item.uri, item.id)}
       >
         <Text style={styles.removeButtonText}>X</Text>
       </TouchableOpacity>

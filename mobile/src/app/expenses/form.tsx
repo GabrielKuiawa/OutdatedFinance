@@ -63,6 +63,7 @@ export default function NewExpense() {
   }
   const images: PickedImage[] =
     files?.results?.map((file) => ({
+      id:file.id,
       uri: file.file_path,
       name: "default.jpg",
       mimeType: "image/jpeg",
@@ -259,7 +260,7 @@ export default function NewExpense() {
       </View>
 
       {isEdit ? (
-        <MultiImagePicker initialImages={images} onChange={setPickedImages} />
+        <MultiImagePicker idExpense={Number(id)} initialImages={images} onChange={setPickedImages} />
       ) : (
         <MultiImagePicker onChange={setPickedImages} />
       )}

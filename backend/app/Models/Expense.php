@@ -25,7 +25,7 @@ class Expense extends Model
 {
     protected static string $table = 'expenses';
     protected static array $columns = [
-        
+
         'title',
         'description',
         'amount',

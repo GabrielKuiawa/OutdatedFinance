@@ -51,7 +51,7 @@ class ResourceTest extends TestCase
         $this->assertSame($resource, $modelProperty->getValue($fileService));
     }
 
-   
+
 
     public function testStaticPropertiesExist(): void
     {
@@ -63,6 +63,4 @@ class ResourceTest extends TestCase
         $this->assertTrue($reflection->getProperty('table')->isProtected());
         $this->assertTrue($reflection->getProperty('columns')->isProtected());
     }
-
-  
 }

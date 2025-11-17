@@ -30,8 +30,8 @@ export const ApiService = {
     return useInfiniteFetch<Expense>(`${API_BASE_URL}/expenses/page/1`, Token);
   },
   getExpensesFileApi(id?: number) {
-    return useFetch<ResultFiles>(`${API_BASE_URL}/expenses/${id}/files`,Token)
-  }
+    return useFetch<ResultFiles>(`${API_BASE_URL}/expenses/${id}/files`, Token);
+  },
 };
 
 export async function loginApi(email: string, password: string) {
@@ -87,5 +87,19 @@ export async function deleteExpenseApi(id: number) {
       Authorization: `Bearer ${Token}`,
     },
   });
+  return response.json();
+}
+
+export async function deleteExpenseFileApi(idExpense: number, idFile: number) {
+  const response = await fetch(
+    `${API_BASE_URL}/expenses/${idExpense}/files${idFile}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Token}`,
+      },
+    }
+  );
   return response.json();
 }
