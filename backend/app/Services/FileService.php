@@ -17,7 +17,8 @@ class FileService
         private Resource $model,
         private string $storeDir,
         private array $validations = [],
-    ) {}
+    ) {
+    }
 
     public function path(): string
     {
