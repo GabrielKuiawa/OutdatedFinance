@@ -35,6 +35,13 @@ class User extends Model
         return $this->hasMany(Group::class, 'owner_user_id');
     }
 
+    //user tem várias tags
+
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class, 'user_id');
+    }
+
     public function memberGroups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'group_users', 'user_id', 'group_id');

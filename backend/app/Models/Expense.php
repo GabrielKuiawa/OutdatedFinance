@@ -60,11 +60,16 @@ class Expense extends Model
 
     public function groupUser(): BelongsTo
     {
-        return $this->belongsTo(GroupUser::class, 'group_users');
+        return $this->belongsTo(GroupUser::class, 'group_id');
     }
 
     public function resource(): HasMany
     {
         return $this->hasMany(Resource::class, 'expenses_id');
+    }
+
+    public function expenseTags(): HasMany
+    {
+        return $this->hasMany(ExpenseTags::class, 'expenses_id');
     }
 }

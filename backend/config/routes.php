@@ -4,6 +4,7 @@ use App\Controllers\ExpenseResourceController;
 use App\Controllers\UsersController;
 use App\Controllers\ExpensesController;
 use App\Controllers\GroupController;
+use App\Controllers\TagController;
 use Core\Router\Route;
 
 Route::post('/api/login', [UsersController::class, 'login'])->name('api.login');
@@ -28,6 +29,17 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/groups', [GroupController::class, 'create']);
     Route::put('/api/groups/{id}', [GroupController::class, 'update']);
     Route::delete('/api/groups/{id}', [GroupController::class, 'destroy']);
+
+    Route::get('/api/tags', [TagController::class, 'index']);
+    Route::get('/api/tags/{id}', [TagController::class, 'show']);
+    Route::post('/api/tags', [TagController::class, 'create']);
+    Route::put('/api/tags/{id}', [TagController::class, 'update']);
+    Route::delete('/api/tags/{id}', [TagController::class, 'destroy']);
+
+     // TAGS DA DESPESA
+    Route::get('/api/expenses/{id}/tags', [ExpenseTagController::class, 'index']);
+    Route::post('/api/expenses/{id}/tags', [ExpenseTagController::class, 'store']);
+    Route::delete('/api/expenses/{id}/tags/{tag_id}', [ExpenseTagController::class, 'destroy']);
 });
 
 Route::middleware('admin')->group(function () {
