@@ -43,9 +43,9 @@ class Tag extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function expenseTags(): HasMany
+    public function expenseTags(): BelongsToMany
     {
-        return $this->hasMany(ExpenseTags::class, 'tag_id');
+        return $this->BelongsToMany(ExpenseTags::class, 'tag_id');
     }
         
 }
