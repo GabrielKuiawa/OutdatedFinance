@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Core\Database\ActiveRecord\BelongsToMany;
 use Core\Database\ActiveRecord\Model;
     /**
      * @property string $name
