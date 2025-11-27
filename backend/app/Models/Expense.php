@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Services\FileService;
 use Core\Database\ActiveRecord\BelongsTo;
-use Core\Database\ActiveRecord\HasMany;
+use Core\Database\ActiveRecord\BelongsToMany;
 use Core\Database\ActiveRecord\Model;
 use Lib\Validations;
 
@@ -68,8 +68,8 @@ class Expense extends Model
         return $this->hasMany(Resource::class, 'expenses_id');
     }
 
-    public function expenseTags(): HasMany
+    public function expenseTags(): BelongsToMany
     {
-        return $this->hasMany(ExpenseTags::class, 'expenses_id');
+        return $this->belongsToMany(ExpenseTags::class, 'expenses_id');
     }
 }
